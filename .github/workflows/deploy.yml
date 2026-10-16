@@ -1,0 +1,32 @@
+name: Build and Push Docker Image
+
+# Step 1: Tell GitHub to wake up this pipeline whenever code is pushed to 'main'
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-ship:
+    runs-on: ubuntu-latest # Use a clean, isolated Linux machine hosted by GitHub
+
+    steps:
+    # Step 2: Download your repository code onto the GitHub machine
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Step 3: Securely log into your Docker Hub account
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    # Step 4: Automatically compile, optimize, and push your container image
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          haroon20262026/my-web-app:latest
+          haroon20262026/my-web-app:${{ github.sha }}
